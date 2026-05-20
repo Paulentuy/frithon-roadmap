@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ru" data-version="9" data-last-updated="2026-05-19">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frithon — Roadmap Tracker</title>
+<style>
+  :root {
+    --bg: #f5f3ef;
+    --card-bg: #ffffff;
+    --text: #1a1a1a;
+    --text-muted: #6b6b6b;
+    --border: #e6e1d8;
+    --accent: #6b46c1;
+    --green: #10b981;
+    --yellow: #f59e0b;
+    --orange: #f97316;
+    --red: #ef4444;
+    --purple: #8b5cf6;
+    --brown: #78716c;
+    --done-bg: #d1fae5;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-hover: 0 4px 12px rgba(0,0,0,0.12);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1714;
+      --card-bg: #252119;
+      --text: #f5f3ef;
+      --text-muted: #a8a29e;
+      --border: #3a342a;
+      --done-bg: #064e3b;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 32px 16px;
+    min-height: 100vh;
+  }
+
+  .container { max-width: 920px; margin: 0 auto; }
+
+  header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 32px;
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+
+  h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px; }
+  .subtitle { color: var(--text-muted); font-size: 15px; margin-bottom: 24px; }
+
+  .meta {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+  .meta b { color: var(--text); font-weight: 600; }
+
+  .overall-progress {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 16px 20px;
+    border: 1px solid var(--border);
+  }
+  .overall-progress-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .progress-bar {
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--accent));
+    border-radius: 4px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .stage {
+    background: var(--card-bg);
+    border-radius: 16px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .stage:hover { box-shadow: var(--shadow-hover); }
+
+  .stage-header {
+    padding: 20px 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    user-select: none;
+    position: relative;
+  }
+
+  .stage-color {
+    width: 6px;
+    height: 48px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .stage-1 .stage-color { background: var(--green); }
+  .stage-2 .stage-color { background: var(--yellow); }
+  .stage-3 .stage-color { background: var(--orange); }
+  .stage-4 .stage-color { background: var(--red); }
+  .stage-5 .stage-color { background: var(--purple); }
+  .stage-6 .stage-color { background: var(--brown); }
+
+  .stage-info { flex: 1; min-width: 0; }
+  .stage-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .stage-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .stage-badge.done { background: var(--done-bg); color: var(--green); }
+  .stage-subtitle { color: var(--text-muted); font-size: 13px; }
+
+  .stage-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    min-width: 140px;
+  }
+  .stage-count {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .stage-progress {
+    width: 140px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .stage-progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .stage-1 .stage-progress-fill { background: var(--green); }
+  .stage-2 .stage-progress-fill { background: var(--yellow); }
+  .stage-3 .stage-progress-fill { background: var(--orange); }
+  .stage-4 .stage-progress-fill { background: var(--red); }
+  .stage-5 .stage-progress-fill { background: var(--purple); }
+  .stage-6 .stage-progress-fill { background: var(--brown); }
+
+  .stage-toggle {
+    font-size: 20px;
+    color: var(--text-muted);
+    transition: transform 0.3s;
+    margin-left: 4px;
+  }
+  .stage.expanded .stage-toggle { transform: rotate(90deg); }
+
+  .stage-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .stage.expanded .stage-body { max-height: 3000px; }
+
+  .stage-body-inner { padding: 0 24px 24px 46px; }
+
+  .task {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin: 2px 0;
+  }
+  .task:hover { background: var(--bg); }
+
+  .task-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    background: var(--card-bg);
+    margin-top: 1px;
+  }
+  .task.done .task-checkbox {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .task-checkbox::after {
+    content: '';
+    width: 6px;
+    height: 10px;
+    border-right: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(45deg) scale(0);
+    transition: transform 0.2s;
+    margin-bottom: 2px;
+  }
+  .task.done .task-checkbox::after { transform: rotate(45deg) scale(1); }
+
+  .task-content { flex: 1; min-width: 0; }
+  .task-title {
+    font-size: 15px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .task.done .task-title {
+    text-decoration: line-through;
+    color: var(--text-muted);
+  }
+  .task-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .task-difficulty {
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--text-muted);
+    margin-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    font-weight: 500;
+  }
+
+  .actions {
+    text-align: center;
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  button {
+    padding: 10px 20px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text);
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  button:hover { background: var(--bg); border-color: var(--accent); }
+  button.primary { background: var(--accent); color: white; border-color: var(--accent); }
+  button.primary:hover { background: #5b3aa3; }
+
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  footer code {
+    background: var(--card-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    border: 1px solid var(--border);
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 16px 8px; }
+    h1 { font-size: 24px; }
+    .stage-header { padding: 16px; gap: 12px; }
+    .stage-stats { min-width: 100px; }
+    .stage-progress { width: 80px; }
+    .stage-body-inner { padding: 0 16px 16px 34px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>🙏 Служение — Roadmap Tracker</h1>
+    <div class="subtitle">Долгосрочный план развития проекта · от MVP до SaaS</div>
+
+    <div class="meta">
+      <span>📌 Production: <b>v3.7.1</b></span>
+      <span>📅 Обновлён: <b id="lastUpdated">19 мая 2026</b></span>
+      <span>🔁 Версия трекера: <b>1</b></span>
+    </div>
+
+    <div class="overall-progress">
+      <div class="overall-progress-label">
+        <span>Общий прогресс по roadmap</span>
+        <span id="overallText">0 из 0 (0%)</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="overallFill" style="width: 0%"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== ЭТАП 1 ========== -->
+  <div class="stage stage-1 expanded" data-stage="1">
+    <div class="stage-header" onclick="toggleStage(this)">
+      <div class="stage-color"></div>
+      <div class="stage-info">
+        <div class="stage-title">Этап 1 — MVP <span class="stage-badge done">Готово</span></div>
+        <div class="stage-subtitle">Базовая система с аутентификацией, ролями, расписанием · v1.0 → v3.4</div>
+      </div>
+      <div class="stage-stats">
+        <div class="stage-count" data-count></div>
+        <div class="stage-progress"><div class="stage-progress-fill" data-fill></div></div>
+      </div>
+      <div class="stage-toggle">▶</div>
+    </div>
+    <div class="stage-body">
+      <div class="stage-body-inner">
+        <div class="task done" data-task="s1-auth"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Аутентификация (email + password + код подтверждения)</div><div class="task-note">v3.0–v3.1 · SHA-256, 1000 итераций, 6-значный код</div></div></div>
+        <div class="task done" data-task="s1-tabs"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">4 вкладки + админская «⚙ Управление»</div><div class="task-note">Календарь / Все недели / Архив / Команда</div></div></div>
+        <div class="task done" data-task="s1-roles"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Роли: юзер / координатор дня / админ</div></div></div>
+        <div class="task done" data-task="s1-colors"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Color tracking 🟢🟡🔴🔵 по уникальным датам</div><div class="task-note">2 подряд / 3 / 4 / возврат после 4+ недель</div></div></div>
+        <div class="task done" data-task="s1-coord"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Координатор на каждый день</div><div class="task-note">Лист «Координаторы» · админ-права на свою дату</div></div></div>
+        <div class="task done" data-task="s1-delete"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Полное удаление пользователей с подтверждением</div></div></div>
+        <div class="task done" data-task="s1-compat"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Правила совместимости (Кухня/Медиа эксклюзивны, остальные стекаются)</div></div></div>
+        <div class="task done" data-task="s1-design"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Команда «Дизайн» + активные даты</div></div></div>
+        <div class="task done" data-task="s1-archive"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Вкладки «Все недели» (до 2027) и «📚 Архив»</div></div></div>
+        <div class="task done" data-task="s1-top10"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Топ-10 самых активных в Команде</div></div></div>
+        <div class="task done" data-task="s1-phone"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Телефон в формате +1 (XXX) XXX-XXXX везде в UI</div><div class="task-note">v3.4</div></div></div>
+        <div class="task done" data-task="s1-modal"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Person-modal: контакты + ближайшие служения (с дедупом)</div><div class="task-note">v3.3–v3.4</div></div></div>
+        <div class="task done" data-task="s1-pro-structure"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Профессиональная структура проекта: src/, docs/, git, .gitignore</div><div class="task-note">19 мая 2026 — 10 docs файлов + initial commit</div></div></div>
+        <div class="task done" data-task="s1-logs"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Лист «Логи» — аудит-трейл всех действий</div><div class="task-note">v3.7 · 10 колонок · logAction() · никогда не удаляется автоматически</div></div></div>
+        <div class="task done" data-task="s1-user-detail"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Карточка пользователя в админке (редактирование + история)</div><div class="task-note">v3.7 · клик по юзеру → модал с вкладками «Информация» / «История действий»; можно править имя/email/телефон, переключать verified/admin, удалить</div></div></div>
+        <div class="task done" data-task="s1-date-detail"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Карточка даты (история + удаление даты для админа)</div><div class="task-note">v3.7 · кнопка «ℹ Подробности» в шапке недели → история действий + удалить дату полностью (bug fix)</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ЭТАП 2 ========== -->
+  <div class="stage stage-2 expanded" data-stage="2">
+    <div class="stage-header" onclick="toggleStage(this)">
+      <div class="stage-color"></div>
+      <div class="stage-info">
+        <div class="stage-title">Этап 2 — Polish &amp; Branding <span class="stage-badge">В работе</span></div>
+        <div class="stage-subtitle">Брендинг, уведомления, домен, PWA · 1–2 недели</div>
+      </div>
+      <div class="stage-stats">
+        <div class="stage-count" data-count></div>
+        <div class="stage-progress"><div class="stage-progress-fill" data-fill></div></div>
+      </div>
+      <div class="stage-toggle">▶</div>
+    </div>
+    <div class="stage-body">
+      <div class="stage-body-inner">
+        <div class="task done" data-task="s2-favicon"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Свой favicon + логотип в шапке<span class="task-difficulty">низкая</span></div><div class="task-note">v3.6 · frith-stool SVG, favicon.ico, apple-touch, PWA icons</div></div></div>
+        <div class="task done" data-task="s2-title"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Изменить заголовок страницы, цвета бренда<span class="task-difficulty">низкая</span></div><div class="task-note">v3.6 · "Frithon — Schedule", палитра бордо/крем</div></div></div>
+        <div class="task done" data-task="s2-rename"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Ребрендинг — новое имя Frithon, BRAND.md, DESIGN_TOKENS.md<span class="task-difficulty">средняя</span></div><div class="task-note">v3.6 · старо-английское frith = защита общины, frith-stool лого</div></div></div>
+        <div class="task done" data-task="s2-domain"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Купить frithon.com (+ .org + .net защитные)<span class="task-difficulty">низкая</span></div><div class="task-note">v3.6 · 19 мая 2026 · Namecheap</div></div></div>
+        <div class="task" data-task="s2-email-24h"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Email-уведомления за 24ч до служения<span class="task-difficulty">средняя</span></div><div class="task-note">Через installable trigger Apps Script</div></div></div>
+        <div class="task" data-task="s2-telegram"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Telegram-бот для уведомлений<span class="task-difficulty">средняя</span></div></div></div>
+        <div class="task" data-task="s2-push"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Push-уведомления через OneSignal<span class="task-difficulty">средняя</span></div></div></div>
+        <div class="task" data-task="s2-pwa"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">PWA — Add to Home Screen iOS/Android<span class="task-difficulty">низкая</span></div></div></div>
+        <div class="task" data-task="s2-theme"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Светлая / тёмная тема (auto)<span class="task-difficulty">низкая</span></div></div></div>
+        <div class="task" data-task="s2-i18n"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Локализация UI (RU / UA / EN)<span class="task-difficulty">средняя</span></div></div></div>
+        <div class="task" data-task="s2-domain"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Купить домен (sluzhenie.app или похожий)<span class="task-difficulty">низкая</span></div><div class="task-note">~$12/год</div></div></div>
+        <div class="task" data-task="s2-cloudflare"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Cloudflare Workers proxy → script.google.com<span class="task-difficulty">средняя</span></div><div class="task-note">Убирает Apps Script баннер и длинный URL</div></div></div>
+        <div class="task done" data-task="s2-github-backup"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Создать приватный GitHub repo и запушить (cloud-бэкап кода)<span class="task-difficulty">низкая</span></div><div class="task-note">✅ 19 мая 2026 — github.com/Paulentuy/sluzhenie-church-platform, SSH + gh CLI настроены</div></div></div>
+        <div class="task" data-task="s2-time-machine"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Настроить Time Machine на внешний диск<span class="task-difficulty">низкая</span></div><div class="task-note">Защита от потери Mac</div></div></div>
+        <div class="task done" data-task="s2-sheet-coowner"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Добавить co-owner к Google Sheet<span class="task-difficulty">низкая</span></div><div class="task-note">✅ 19 мая 2026 — 2 co-owners (резервный email + церковный)</div></div></div>
+        <div class="task done" data-task="s2-sheet-backup"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Еженедельный авто-экспорт Sheet в .xlsx через Apps Script trigger<span class="task-difficulty">низкая</span></div><div class="task-note">✅ 19 мая 2026 — backupSheet() + триггер вс 03:00, папка Drive + email с .xlsx</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ЭТАП 3 ========== -->
+  <div class="stage stage-3" data-stage="3">
+    <div class="stage-header" onclick="toggleStage(this)">
+      <div class="stage-color"></div>
+      <div class="stage-info">
+        <div class="stage-title">Этап 3 — Платежи и подписки</div>
+        <div class="stage-subtitle">Stripe, тарифы Free / Pro / Church · ~1 месяц</div>
+      </div>
+      <div class="stage-stats">
+        <div class="stage-count" data-count></div>
+        <div class="stage-progress"><div class="stage-progress-fill" data-fill></div></div>
+      </div>
+      <div class="stage-toggle">▶</div>
+    </div>
+    <div class="stage-body">
+      <div class="stage-body-inner">
+        <div class="task" data-task="s3-checkout"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Stripe Checkout (Test → Production)</div></div></div>
+        <div class="task" data-task="s3-plans"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Тарифы: Free (до 20), Pro $9 (до 100), Church $29 (unlimited)</div></div></div>
+        <div class="task" data-task="s3-webhooks"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Stripe webhooks → активация в БД</div><div class="task-note">Перед этим лучше мигрировать backend (Этап 4)</div></div></div>
+        <div class="task" data-task="s3-billing"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Биллинг-страница для админов</div></div></div>
+        <div class="task" data-task="s3-trial"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Trial period 14 дней</div></div></div>
+        <div class="task" data-task="s3-promo"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Promo-коды</div></div></div>
+        <div class="task" data-task="s3-invoice"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Invoice email после каждого платежа</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ЭТАП 4 ========== -->
+  <div class="stage stage-4" data-stage="4">
+    <div class="stage-header" onclick="toggleStage(this)">
+      <div class="stage-color"></div>
+      <div class="stage-info">
+        <div class="stage-title">Этап 4 — Миграция на полноценный stack</div>
+        <div class="stage-subtitle">Next.js + Supabase + Resend + Vercel · 1–2 месяца</div>
+      </div>
+      <div class="stage-stats">
+        <div class="stage-count" data-count></div>
+        <div class="stage-progress"><div class="stage-progress-fill" data-fill></div></div>
+      </div>
+      <div class="stage-toggle">▶</div>
+    </div>
+    <div class="stage-body">
+      <div class="stage-body-inner">
+        <div class="task" data-task="s4-backend"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Backend: Apps Script → Next.js API Routes (Vercel)</div></div></div>
+        <div class="task" data-task="s4-db"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">БД: Google Sheets → Supabase (Postgres)</div></div></div>
+        <div class="task" data-task="s4-auth"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Auth: Custom → Supabase Auth / Clerk</div></div></div>
+        <div class="task" data-task="s4-email"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Email: MailApp (100/день) → Resend (10K/мес free)</div></div></div>
+        <div class="task" data-task="s4-frontend"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Frontend: HTML → Next.js + Tailwind + shadcn/ui</div></div></div>
+        <div class="task" data-task="s4-hosting"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Хостинг: script.google.com → Vercel + custom домен</div></div></div>
+        <div class="task" data-task="s4-analytics"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Аналитика: PostHog или Plausible</div></div></div>
+        <div class="task" data-task="s4-migration"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Скрипт миграции данных из Sheets в Supabase</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ЭТАП 5 ========== -->
+  <div class="stage stage-5" data-stage="5">
+    <div class="stage-header" onclick="toggleStage(this)">
+      <div class="stage-color"></div>
+      <div class="stage-info">
+        <div class="stage-title">Этап 5 — Multi-tenant SaaS</div>
+        <div class="stage-subtitle">Каждая церковь = свой workspace · 2–3 месяца</div>
+      </div>
+      <div class="stage-stats">
+        <div class="stage-count" data-count></div>
+        <div class="stage-progress"><div class="stage-progress-fill" data-fill></div></div>
+      </div>
+      <div class="stage-toggle">▶</div>
+    </div>
+    <div class="stage-body">
+      <div class="stage-body-inner">
+        <div class="task" data-task="s5-workspaces"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Workspace на каждую церковь</div></div></div>
+        <div class="task" data-task="s5-onboarding"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Onboarding-флоу (3 минуты до готового workspace)</div></div></div>
+        <div class="task" data-task="s5-marketing"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Marketing site (sluzhenie.app)</div></div></div>
+        <div class="task" data-task="s5-subdomains"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Custom subdomains (church1.sluzhenie.app)</div></div></div>
+        <div class="task" data-task="s5-admin"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Admin dashboard для управления всеми workspace</div></div></div>
+        <div class="task" data-task="s5-docs"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Документация для админов церквей</div></div></div>
+        <div class="task" data-task="s5-api"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">API для интеграций (Slack, Discord, Telegram)</div></div></div>
+        <div class="task" data-task="s5-whitelabel"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">White-label опция</div></div></div>
+        <div class="task" data-task="s5-reports"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">Аналитика и отчёты для пастората</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ЭТАП 6 ========== -->
+  <div class="stage stage-6" data-stage="6">
+    <div class="stage-header" onclick="toggleStage(this)">
+      <div class="stage-color"></div>
+      <div class="stage-info">
+        <div class="stage-title">Этап 6 — Advanced features</div>
+        <div class="stage-subtitle">Долгосрочные улучшения · постоянно</div>
+      </div>
+      <div class="stage-stats">
+        <div class="stage-count" data-count></div>
+        <div class="stage-progress"><div class="stage-progress-fill" data-fill></div></div>
+      </div>
+      <div class="stage-toggle">▶</div>
+    </div>
+    <div class="stage-body">
+      <div class="stage-body-inner">
+        <div class="task" data-task="s6-video"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">🎓 Видео-обучение перед служением (loom-style)</div></div></div>
+        <div class="task" data-task="s6-chat"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">💬 Внутренний чат команды</div></div></div>
+        <div class="task" data-task="s6-swap"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">🔄 «Поменяйся со мной» — запросы на замену</div></div></div>
+        <div class="task" data-task="s6-ai"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">🤖 AI-помощник: «составь оптимальное расписание»</div></div></div>
+        <div class="task" data-task="s6-calsync"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">📅 Google Calendar / Outlook 2-way sync</div></div></div>
+        <div class="task" data-task="s6-mood"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">😊 Запись настроений после служения</div></div></div>
+        <div class="task" data-task="s6-gamif"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">🎉 Геймификация (стрики, badges)</div></div></div>
+        <div class="task" data-task="s6-mobile"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">📱 Native mobile apps (React Native)</div></div></div>
+        <div class="task" data-task="s6-vertical"><div class="task-checkbox"></div><div class="task-content"><div class="task-title">🌐 White-label для других ниш (волонтёры, школы, спорт)</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button onclick="expandAll()">▾ Развернуть всё</button>
+    <button onclick="collapseAll()">▸ Свернуть всё</button>
+    <button onclick="resetLocal()">↻ Сбросить мои клики (вернуть из файла)</button>
+  </div>
+
+  <footer>
+    <div><b>Как этим пользоваться:</b></div>
+    <div>Клик по чекбоксу — отметить задачу как сделанную. Состояние сохраняется в браузере (localStorage).</div>
+    <div>Когда Claude обновляет файл (новая версия трекера) — твои локальные клики сбрасываются и подтягиваются «истинные» статусы из файла.</div>
+    <div style="margin-top:12px;">
+      📂 Файл живёт в <code>~/Documents/Claude/Projects/Служение — Church Platform/ROADMAP_TRACKER.html</code><br>
+      📌 На Desktop есть ярлык: <code>Служение — Roadmap.html</code><br>
+      🔁 iCloud sync — обновления видны на обоих Mac'ах
+    </div>
+  </footer>
+</div>
+
+<script>
+(function() {
+  const VERSION = document.documentElement.getAttribute('data-version');
+  const LS_KEY = 'sluzhenie_roadmap_state';
+  const LS_VERSION_KEY = 'sluzhenie_roadmap_version';
+
+  // Сброс localStorage если версия файла обновилась
+  if (localStorage.getItem(LS_VERSION_KEY) !== VERSION) {
+    localStorage.removeItem(LS_KEY);
+    localStorage.setItem(LS_VERSION_KEY, VERSION);
+  }
+
+  // Подгрузка состояния из localStorage поверх defaults из HTML
+  const savedState = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+  document.querySelectorAll('.task').forEach(task => {
+    const id = task.dataset.task;
+    if (id in savedState) {
+      task.classList.toggle('done', savedState[id]);
+    }
+  });
+
+  // Клик по задаче
+  document.querySelectorAll('.task').forEach(task => {
+    task.addEventListener('click', () => {
+      task.classList.toggle('done');
+      saveState();
+      updateProgress();
+    });
+  });
+
+  function saveState() {
+    const state = {};
+    document.querySelectorAll('.task').forEach(task => {
+      state[task.dataset.task] = task.classList.contains('done');
+    });
+    localStorage.setItem(LS_KEY, JSON.stringify(state));
+  }
+
+  function updateProgress() {
+    let totalDone = 0, totalAll = 0;
+    document.querySelectorAll('.stage').forEach(stage => {
+      const tasks = stage.querySelectorAll('.task');
+      const done = stage.querySelectorAll('.task.done').length;
+      const total = tasks.length;
+      const pct = total === 0 ? 0 : Math.round(done / total * 100);
+
+      stage.querySelector('[data-count]').textContent = done + ' / ' + total;
+      stage.querySelector('[data-fill]').style.width = pct + '%';
+
+      totalDone += done;
+      totalAll += total;
+    });
+    const overallPct = totalAll === 0 ? 0 : Math.round(totalDone / totalAll * 100);
+    document.getElementById('overallText').textContent = totalDone + ' из ' + totalAll + ' (' + overallPct + '%)';
+    document.getElementById('overallFill').style.width = overallPct + '%';
+  }
+
+  window.toggleStage = function(headerEl) {
+    headerEl.parentElement.classList.toggle('expanded');
+  };
+  window.expandAll = function() {
+    document.querySelectorAll('.stage').forEach(s => s.classList.add('expanded'));
+  };
+  window.collapseAll = function() {
+    document.querySelectorAll('.stage').forEach(s => s.classList.remove('expanded'));
+  };
+  window.resetLocal = function() {
+    if (confirm('Сбросить твои локальные клики и вернуть статусы из файла Claude?')) {
+      localStorage.removeItem(LS_KEY);
+      location.reload();
+    }
+  };
+
+  // Дата обновления
+  const lastUpd = document.documentElement.getAttribute('data-last-updated');
+  if (lastUpd) {
+    const d = new Date(lastUpd);
+    const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+    document.getElementById('lastUpdated').textContent = d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+  }
+
+  updateProgress();
+})();
+</script>
+</body>
+</html>
