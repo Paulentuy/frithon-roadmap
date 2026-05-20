@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="9" data-last-updated="2026-05-19">
+<html lang="ru" data-version="10" data-last-updated="2026-05-19">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -333,7 +333,7 @@
     <div class="meta">
       <span>📌 Production: <b>v3.7.1</b></span>
       <span>📅 Обновлён: <b id="lastUpdated">19 мая 2026</b></span>
-      <span>🔁 Версия трекера: <b>1</b></span>
+      <span>🔁 Версия трекера: <b id="trackerVersion">1</b></span>
     </div>
 
     <div class="overall-progress">
@@ -623,10 +623,15 @@
     }
   };
 
-  // Дата обновления
+  // Версия трекера — синхронизируем видимую надпись с data-version
+  const tvEl = document.getElementById('trackerVersion');
+  if (tvEl && VERSION) tvEl.textContent = VERSION;
+
+  // Дата обновления (парсим как локальную дату, иначе timezone сдвигает на -1 день)
   const lastUpd = document.documentElement.getAttribute('data-last-updated');
   if (lastUpd) {
-    const d = new Date(lastUpd);
+    const p = lastUpd.split('-');
+    const d = new Date(+p[0], (+p[1]) - 1, +p[2]);
     const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
     document.getElementById('lastUpdated').textContent = d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
   }
